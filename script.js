@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* Intro */
+    /* =====================================
+       INTRO
+    ===================================== */
 
     const loader = document.querySelector(".page-loader");
     const name = document.querySelector("#typing-name");
@@ -8,14 +10,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (loader && name && subtitle) {
 
-        const text = name.dataset.text;
+        const text = name.dataset.text || "DAVINAH ADEOYE";
+
+        let letter = 0;
 
         const cursor = document.createElement("span");
+
         cursor.className = "typing-cursor";
 
         name.appendChild(cursor);
 
-        let letter = 0;
 
         function typeName() {
 
@@ -33,175 +37,290 @@ document.addEventListener("DOMContentLoaded", () => {
 
             } else {
 
+                /* Stop the cursor when typing finishes */
+
                 cursor.classList.add("finished");
 
-                setTimeout(() => {
-                    subtitle.classList.add("subtitle-visible");
-                }, 350);
+
+                /* Show PORTFOLIO */
 
                 setTimeout(() => {
-                    loader.classList.add("loader-hidden");
-                }, 3200);
+
+                    subtitle.classList.add(
+                        "subtitle-visible"
+                    );
+
+                }, 300);
+
+
+                /* Close intro */
+
+                setTimeout(() => {
+
+                    loader.classList.add(
+                        "loader-hidden"
+                    );
+
+                }, 2500);
             }
         }
 
-        setTimeout(typeName, 600);
+
+        /* Start typing */
+
+        setTimeout(typeName, 400);
+
+
+        /*
+            Safety fallback.
+
+            If something goes wrong with the
+            animation on a phone, the page
+            cannot remain stuck forever.
+        */
+
+        setTimeout(() => {
+
+            loader.classList.add(
+                "loader-hidden"
+            );
+
+        }, 7000);
     }
 
 
-    /* Hero */
+    /* =====================================
+       HERO
+    ===================================== */
 
-    const heroText = document.querySelector(".hero-text");
+    const heroText =
+        document.querySelector(".hero-text");
 
     setTimeout(() => {
 
         if (heroText) {
-            heroText.classList.add("hero-visible");
+
+            heroText.classList.add(
+                "hero-visible"
+            );
         }
 
-    }, 4800);
+    }, 3000);
 
 
-    /* Scroll animations */
+    /* =====================================
+       SCROLL ANIMATIONS
+    ===================================== */
 
     const elements = document.querySelectorAll(
-        ".section-heading, .gallery figure, .about-content p, .contact-content"
+        ".section-heading, " +
+        ".gallery figure, " +
+        ".about-content p, " +
+        ".contact-content"
     );
 
-    const observer = new IntersectionObserver(
-        entries => {
 
-            entries.forEach(entry => {
+    if ("IntersectionObserver" in window) {
 
-                if (entry.isIntersecting) {
+        const observer =
+            new IntersectionObserver(
+                entries => {
 
-                    entry.target.classList.add(
-                        "reveal-visible"
-                    );
+                    entries.forEach(entry => {
 
-                    observer.unobserve(entry.target);
-                }
+                        if (entry.isIntersecting) {
 
-            });
+                            entry.target.classList.add(
+                                "reveal-visible"
+                            );
 
-        },
-        {
-            threshold: 0.15
-        }
-    );
-
-    elements.forEach(element => {
-        observer.observe(element);
-    });
-
-
-    /* Header */
-
-    const header = document.querySelector("header");
-
-    window.addEventListener("scroll", () => {
-
-        if (!header) {
-            return;
-        }
-
-        header.classList.toggle(
-            "scrolled",
-            window.scrollY > 50
-        );
-
-    });
-
-
-    /* Contact form */
-
-    const form = document.querySelector(".enquiry-form");
-
-    if (form) {
-
-        form.addEventListener("submit", async event => {
-
-            event.preventDefault();
-
-            const button = form.querySelector(
-                "button[type='submit']"
-            );
-
-            const status = form.querySelector(
-                ".form-status"
-            );
-
-            const originalText = button.innerHTML;
-
-            button.disabled = true;
-            button.innerHTML = "Sending...";
-
-            status.classList.remove("show");
-            status.textContent = "";
-
-
-            try {
-
-                const response = await fetch(
-                    form.action,
-                    {
-                        method: "POST",
-
-                        body: new FormData(form),
-
-                        headers: {
-                            Accept:
-                                "application/json"
+                            observer.unobserve(
+                                entry.target
+                            );
                         }
-                    }
-                );
 
+                    });
 
-                if (!response.ok) {
-                    throw new Error(
-                        "Form submission failed"
-                    );
+                },
+                {
+                    threshold: 0.1
                 }
+            );
 
 
-                form.reset();
+        elements.forEach(element => {
 
-                button.innerHTML =
-                    "✓ Enquiry sent";
-
-                status.textContent =
-                    "✓ Your enquiry has been sent successfully.";
-
-                status.classList.add("show");
-
-
-                setTimeout(() => {
-
-                    button.disabled = false;
-
-                    button.innerHTML =
-                        originalText;
-
-                }, 4000);
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                button.disabled = false;
-
-                button.innerHTML =
-                    "Try again";
-
-                status.textContent =
-                    "Something went wrong. Please try again.";
-
-                status.classList.add("show");
-            }
+            observer.observe(element);
 
         });
 
+    } else {
+
+        /*
+            Older browsers that do not support
+            IntersectionObserver simply show
+            everything normally.
+        */
+
+        elements.forEach(element => {
+
+            element.classList.add(
+                "reveal-visible"
+            );
+
+        });
+    }
+
+
+    /* =====================================
+       HEADER
+    ===================================== */
+
+    const header =
+        document.querySelector("header");
+
+    if (header) {
+
+        window.addEventListener(
+            "scroll",
+            () => {
+
+                header.classList.toggle(
+                    "scrolled",
+                    window.scrollY > 50
+                );
+
+            }
+        );
+    }
+
+
+    /* =====================================
+       CONTACT FORM
+    ===================================== */
+
+    const form =
+        document.querySelector(
+            ".enquiry-form"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            async event => {
+
+                event.preventDefault();
+
+
+                const button =
+                    form.querySelector(
+                        "button[type='submit']"
+                    );
+
+
+                const status =
+                    form.querySelector(
+                        ".form-status"
+                    );
+
+
+                const originalText =
+                    button.innerHTML;
+
+
+                button.disabled = true;
+
+                button.innerHTML =
+                    "Sending...";
+
+
+                status.classList.remove(
+                    "show"
+                );
+
+                status.textContent = "";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            form.action,
+                            {
+                                method: "POST",
+
+                                body:
+                                    new FormData(form),
+
+                                headers: {
+                                    Accept:
+                                        "application/json"
+                                }
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            "Form submission failed"
+                        );
+                    }
+
+
+                    form.reset();
+
+
+                    button.innerHTML =
+                        "✓ Enquiry sent";
+
+
+                    status.textContent =
+                        "✓ Your enquiry has been sent successfully.";
+
+
+                    status.classList.add(
+                        "show"
+                    );
+
+
+                    setTimeout(() => {
+
+                        button.disabled =
+                            false;
+
+                        button.innerHTML =
+                            originalText;
+
+                    }, 4000);
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+
+                    button.disabled =
+                        false;
+
+
+                    button.innerHTML =
+                        "Try again";
+
+
+                    status.textContent =
+                        "Something went wrong. Please try again.";
+
+
+                    status.classList.add(
+                        "show"
+                    );
+                }
+
+            }
+        );
     }
 
 });
